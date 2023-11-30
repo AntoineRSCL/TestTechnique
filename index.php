@@ -25,13 +25,17 @@
 
 
         <?php
+            //verifie que le formulaire est bien rempli
             if(isset($_POST['number']))
             {
+                //vérifie que l'input n'est pas vide
                 if(!empty($_POST['number']))
                 {
+                    //verifie que la valeur de l'input est bien un nombre entier
                     if(ctype_digit($_POST['number']))
                     {
                         $nombre = $_POST['number'];
+                        //Erreur si le nombre vaut 1 ou 3 car impossible d'arriver a 0 avec des billets de 2
                         if($nombre == 1 || $nombre == 3){
                             echo '<div class="billets"><h2>Il est impossible de rendre au compte juste '.$nombre.'$ avec des billets de 2,5 et 10$</h2></div>';
                         }else{
@@ -40,11 +44,18 @@
                             $tableauCouleurs = ["#F9ECC2", "#FBEDB8", "#E0C5A2"];
                             $cpt=0;
                             echo "<div class='billets'>";
+                                //Parcours le tableau
                                 foreach($result as $billet){
                                     if($billet > 0){
+                                        //Rajoute un s si il y a plusieurs billets
+                                        if($billet != 1){
+                                            $texte = "billets";
+                                        }else{
+                                            $texte = "billet"; 
+                                        } 
                                         echo "<div class='billet'>
                                             <div class='affichage' style='background-color:".$tableauCouleurs[$cpt]."'>".$tableauPrix[$cpt]."</div>
-                                            <span class='nbBillet'><strong>".$billet." </strong></br> billets de ".$tableauPrix[$cpt]."</span>
+                                            <span class='nbBillet'><strong>".$billet." </strong></br> ".$texte." de ".$tableauPrix[$cpt]."</span>
                                         </div>";
                                     }
                                     $cpt+=1;
@@ -60,14 +71,14 @@
             }
 
             /**
-             * Fonction faisant tous les calulcs et qui renvoient les résultats finaux
+             * Fonction faisant tous les calulcs et qui renvoient le nombre de chaque billets
              *
              * @param [int] $n
              * @return void
              */
             function getResults($n){
                 $cpt10=0; $cpt5=0; $cpt2=0;
-                //Si le nombre est supérieur à 20
+                //Si le nombre est supérieur à 20 on garde le reste de la division (Sauf si le reste vaut 1 ou 3 on passe a 21 ou 23 car impossible d'arriver a 0 avec des billets de 2)
                 if($n>20){
                     if($n%20!=1 && $n%20!=3){
                         $reste=$n%20;
@@ -76,12 +87,15 @@
                     }else{
                         $reste=23;
                     }
+                    // Nombre - le reste pour obtenir un multiple de 10 et pouvoir le divisier par 10 et ajouter le resultat en billet de 10
                     $n=$n-$reste;
                     $cpt10=$n/10;
                 }else{
                     $reste=$n;
                 }
+                //Si le reste du calcul au dessus vaut 0 on passe l'etape pour conntaire les derniers billets
                 if($reste!=0){
+                    //boucle pour arriver a 0 si modulo 10 alors ajout d'un billet de 10 la meme avec 5 et si aucun n'est bon on enleve 2 au calcul
                     do{
                         if($reste%10==0)
                         {
